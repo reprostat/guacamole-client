@@ -45,14 +45,16 @@
         <guava.version>32.1.3-jre</guava.version>
         <guice.version>5.1.0</guice.version>
         <hk2.version>2.6.1</hk2.version>
-        <ipaddress.version>5.5.1</ipaddress.version>
-        <jackson.version>2.19.0</jackson.version>
-        <jackson-databind.version>2.19.0</jackson-databind.version>
-        <jersey.version>2.46</jersey.version>
-        <junit.version>5.12.2</junit.version>
+        <ipaddress.version>5.6.2</ipaddress.version>
+        <jackson.version>2.22.3</jackson.version>
+        <jackson-annotations.version>2.22</jackson-annotations.version>
+        <jackson-databind.version>2.22.3</jackson-databind.version>
+        <jersey.version>2.48</jersey.version>
+        <junit.version>5.14.4</junit.version>
         <junit4.version>4.13.2</junit4.version>
-        <logback.version>1.3.15</logback.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <logback.version>1.3.16</logback.version>
+        <mina.version>2.2.9</mina.version>
+        <slf4j.version>2.0.18</slf4j.version>
 
         <!-- The directory that should receive all generated dependency lists
             (for LICENSE generation) -->
@@ -63,6 +65,11 @@
             well as errors that occur during the RAT check (such as incorrect
             or missing license headers). -->
         <ignoreLicenseErrors>false</ignoreLicenseErrors>
+
+        <!-- Set to "true" to automatically download license information
+            for any files that have "Source" headers but lack specific
+            information for the current version of that dependency. -->
+        <downloadMissingLicenses>false</downloadMissingLicenses>
 
         <!-- Set to "true" to perform automated checks for available dependency
             updates, including whether the declared versions of any
@@ -193,7 +200,7 @@
                 <version>3.0.0-M3</version>
                 <executions>
                     <execution>
-                        <id>enforce</id>
+                        <id>enforce-dependency-consistency</id>
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
@@ -278,6 +285,7 @@
                                 </arguments>
                                 <environmentVariables>
                                     <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                    <DOWNLOAD_MISSING_LICENSES>${downloadMissingLicenses}</DOWNLOAD_MISSING_LICENSES>
                                 </environmentVariables>
                             </configuration>
                             <goals>
@@ -424,7 +432,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -445,6 +453,14 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Apache MINA (transitive dependency of jradius-core, pinned here
+                 to force a version without known CVEs) -->
+            <dependency>
+                <groupId>org.apache.mina</groupId>
+                <artifactId>mina-core</artifactId>
+                <version>${mina.version}</version>
             </dependency>
 
             <!-- Logging -->
@@ -559,6 +575,9 @@
             </activation>
             <build>
                 <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
                     <resource>
                         <directory>src/main/resource-templates</directory>
                         <filtering>true</filtering>

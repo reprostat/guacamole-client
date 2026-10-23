@@ -86,6 +86,7 @@
         "ERROR_CLIENT_201"     : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
         "ERROR_CLIENT_202"     : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
         "ERROR_CLIENT_203"     : "The remote desktop server encountered an error and has closed the connection. Please try again or contact your system administrator.",
+        "ERROR_CLIENT_205"     : "This connection requires a resource that is currently in use, but shared access to that resource is either not possible or not permitted. Please try again later.",
         "ERROR_CLIENT_207"     : "The remote desktop server is currently unreachable. If the problem persists, please notify your system administrator, or check your system logs.",
         "ERROR_CLIENT_208"     : "The remote desktop server is currently unavailable. If the problem persists, please notify your system administrator, or check your system logs.",
         "ERROR_CLIENT_209"     : "The remote desktop server has closed the connection because it conflicts with another connection. Please try again later.",
@@ -230,6 +231,7 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FIELD_HEADER_CREATE_MISSING_GROUPS"    : "Automatically create groups",
         "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Replace/Update existing connections",
         "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Reset permissions",
 
@@ -241,6 +243,7 @@
         "HELP_JSON_DESCRIPTION"             : "A connection import JSON file is a list of connection objects. At minimum the connection name and protocol must be specified in each connection object.",
         "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"pass1\", \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"pass2\", \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"carol\", \"password\": \"pass3\", \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
         "HELP_JSON_MORE_DETAILS"            : "The connection group ID that the connection should be imported into may be directly specified with a \"parentIdentifier\" field, or the path to the parent group may be specified using a \"group\" field as shown below. An array of user and user group identifiers to grant access to may be specified per connection.",
+        "HELP_CREATE_MISSING_GROUPS"        : "Automatically create any connection groups specified in the import file that do not already exist. If unchecked, any connection referencing a parent group that cannot be found will be considered an error and will not be imported. If creation fails partway through, any groups already created are left in place; re-importing will reuse them.",
         "HELP_EXISTING_CONNECTION_MODE"     : "Entirely replace/update existing connections if their names and parent connection groups match the values in the provided file. If unchecked, attempting to import a connection with the same name and parent connection group of an existing connection will be considered an error.",
         "HELP_EXISTING_PERMISSION_MODE"     : "Fully reset the permissions granted for all connections in the provided file to the permissions specified in that file. If no permissions are specified, all relevant connection permissions will be revoked. If unchecked, existing permissions are preserved, and any permissions specified in the file will be added.",
         "HELP_SEMICOLON_FOOTNOTE"           : "If present, semicolons can be escaped with a backslash, e.g. \"first\\\\;last\"",
@@ -283,6 +286,7 @@
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_AVAILABLE_CONNECTIONS"   : "{AVAILABLE} of {TOTAL} {TOTAL, plural, one{connection} other{connections}} available",
 
         "INFO_NO_RECENT_CONNECTIONS" : "No recent connections.",
         
@@ -529,9 +533,12 @@
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Include clipboard events:",
         "FIELD_HEADER_RECORDING_NAME"  : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH"  : "Recording path:",
         "FIELD_HEADER_SCROLLBACK"      : "Maximum scrollback size:",
+        "FIELD_HEADER_TERMINAL_TYPE"        : "Terminal type (available as $TERM in command):",
+        "FIELD_HEADER_TERMINAL_TYPE_ATTACH" : "Terminal type (set manually in session):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
@@ -571,6 +578,14 @@
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
 
         "NAME" : "Kubernetes",
 
@@ -644,6 +659,7 @@
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Exclude touch events:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Include clipboard events:",
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_RESIZE_METHOD" : "Resize method:",
@@ -722,7 +738,8 @@
         "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Hungarian (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanese (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norwegian (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norwegian Bokmål (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norwegian Nynorsk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portuguese Brazilian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portuguese (Qwerty)",
@@ -778,6 +795,7 @@
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Include clipboard events:",
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Server keepalive interval:",
@@ -879,6 +897,7 @@
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Include clipboard events:",
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SCROLLBACK"     : "Maximum scrollback size:",
@@ -978,6 +997,7 @@
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Include clipboard events:",
         "FIELD_HEADER_RECORDING_NAME" : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Default upload directory:",
@@ -1032,6 +1052,7 @@
         "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
         "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
         "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_MACROMAN"  : "Mac OS Roman",
         "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
         "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
 

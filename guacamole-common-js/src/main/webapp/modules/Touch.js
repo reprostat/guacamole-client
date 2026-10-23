@@ -337,6 +337,14 @@ Guacamole.Touch.Event = function TouchEvent(type, event, state) {
     Guacamole.Event.DOMEvent.call(this, type, [ event ]);
 
     /**
+     * The state of all keyboard modifiers at the time this event was
+     * received.
+     *
+     * @type {!Guacamole.Keyboard.ModifierState}
+     */
+    this.modifiers = Guacamole.Keyboard.ModifierState.fromEvent(event);
+
+    /**
      * The state of the touch contact associated with this event.
      *
      * @type {!Guacamole.Touch.State}

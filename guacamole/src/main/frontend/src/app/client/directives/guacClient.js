@@ -243,6 +243,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!client || !display)
                 return;
 
+            // Broadcast mousedown event before sending so that modifiers
+            // inferred from its flags (especially Cmd+Click) are processed
+            // before the click that depends on them
+            if (event.type === 'mousedown')
+                $rootScope.$broadcast('guacBeforeClientMouseDown', event, client);
+
             event.stopPropagation();
             event.preventDefault();
 
@@ -302,6 +308,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // or display are not yet available
             if (!client || !display)
                 return;
+
+            // Broadcast mousedown event before sending so that modifiers
+            // inferred from its flags (especially Cmd+Click) are processed
+            // before the click that depends on them
+            if (event.type === 'mousedown')
+                $rootScope.$broadcast('guacBeforeClientMouseDown', event, client);
 
             event.stopPropagation();
             event.preventDefault();
